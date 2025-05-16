@@ -1,13 +1,45 @@
 import "./App.css"
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom" // Importamos los componentes de la librería. // Nos basamos en el ejemplo anterior de React Router.
+import axios from "axios" // Importamos axios.
+import { postProductsAxios, postProductsFetch } from "./assets/js/ejemploPost.js"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"// Importamos los componentes de React Query.
+const queryClient = new QueryClient();// Este es el cliente en si mismo, se encargará de controlar los llamados HTTP.
+import Ejemplo from "./assets/js/ejemploReactQuery.jsx" //importamos el ejemplo de ReactQuery
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools" // Importamos el componente de DevTools.
+import BtnEjemplo from "./components/BtnEjemplo.jsx"
+import ExampleCard from "./components/ExampleCard.jsx"
 
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom" // Importamos los componentes de la librería.
+
+
+const ejemploBody = { // Armamos el body que requiera el servicio.
+  title: "test product",
+  price: 13.5,
+  description: "lorem ipsum set",
+  image: "https://i.pravatar.cc",
+  category: "electronic",
+}
+
+// postProductsFetch(ejemploBody) // Invocamos el ejemplo de fetch.
+// postProductsAxios(ejemploBody) // Invocamos el ejemplo de axios.
+
+
+
+
+
+
+
 const HomePage = () => {
-  return (<><h1>Home Page</h1>
-      <Link to={"/error"}>Ir al error.</Link></>) // Usamos el componente <Link /> para navegar a la página de Error.
+  return (<>
+    {/* <Ejemplo/> */}
+    <h1 style={{fontSize: "20px",color:"red"}}>Home Page</h1>
+    <ExampleCard/>
+    {/* <Link to={"/error"}>Ir al error.</Link>
+    <BtnEjemplo /> */}
+  </>)
 }
 const ErrorPage = () => {
-  return (<><h1>Error Page</h1>
-      <Link to={"/404"}>Ir a 404.</Link></>) // Usamos el componente <Link /> para navegar a la página de Home.
+  return (<><h1 className="ejemploDeClase">Error Page</h1>
+    <Link to={"/404"}>Ir a 404.</Link></>) // Usamos el componente <Link /> para navegar a la página de Home.
 }
 
 const NotFoundPage = () => {
@@ -16,18 +48,39 @@ const NotFoundPage = () => {
       <h1>Error 404!</h1>
       <h2>Not Found!</h2>
       <Link to={"/"}>Ir al home.</Link>
-      </>
+    </>
   )
 }
 function App() {
+
+  const getProductsFetch = () => // Creamos función de ejemplo GET con fetch.
+    fetch("https://fakestoreapi.com/products") // Configuración básica del GET.
+      .then(response => response.json()) // Transformamos el response a JSON.
+      .then(response => console.log("Ejemplo GET fetch:", response)) // Logueamos el resopnse.
+
+  const getProductsAxios = () => // Creamos función de ejemplo GET con axios.
+    axios.get("https://fakestoreapi.com/products") // Configuración básica del GET.
+      .then(response => response.data) // Extraemos la data del response.
+      .then(response => console.log("Ejemplo GET axios:", response)) // Logueamos el resopnse.
+
+  // getProductsFetch() // Invocamos la función con fetch a modo de ejemplo.
+  // getProductsAxios() // Invocamos la función con axios a modo de ejemplo.
+
+
   return (
-    <BrowserRouter> // Este componente habilita la navegación de manera global, forma parte de la configuración de la librería.
-      <Routes> // Este componente se encarga de manejar las rutas.
-        <Route path="/" element={<HomePage />} /> // Este componente asocia cada ruta con cada página. 
-        <Route path="/error" element={<ErrorPage />} />
-        <Route path="/404" element={<NotFoundPage/>} />
-      </Routes>
-    </BrowserRouter>
+    // Con este componente vamos a proveer todas las funcionalidades a la APP.
+    // El componente BrowserRouter habilita la navegación de manera global, forma parte de la configuración de la librería.
+    // Colocamos el componente de DevTools (ReactQueryDevtools).
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes> // Este componente se encarga de manejar las rutas.
+          <Route path="/" element={<HomePage />} /> // Este componente asocia cada ruta con cada página.
+          <Route path="/error" element={<ErrorPage />} />
+          <Route path="/404" element={<NotFoundPage />} />
+        </Routes>
+      </BrowserRouter>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   )
 }
 
